@@ -1,0 +1,439 @@
+# TaskManagement API - REST Client File
+# Use this file with REST Client extension in VS Code
+# Update the host address to match your API server
+
+@TaskManagement.Server_HostAddress = https://localhost:7186
+@ContentType = application/json
+
+# Variables for authentication (will be set after login)
+@AuthToken = 
+@UserId = 1
+@TaskId = 1
+
+###############################################################################
+# AUTHENTICATION ENDPOINTS
+###############################################################################
+
+### Register a new user
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "TestPass123!"
+}
+
+### Register - Demo User
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "newdemouser",
+  "email": "newdemo@example.com", 
+  "password": "Demo123!"
+}
+
+### Login with demo credentials
+# @name loginDemo
+POST {{TaskManagement.Server_HostAddress}}/api/auth/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "demo_user",
+  "password": "Demo123!"
+}
+
+### Login with john_doe credentials
+# @name loginJohn
+POST {{TaskManagement.Server_HostAddress}}/api/auth/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "john_doe",
+  "password": "John123!"
+}
+
+### Login with custom user
+# @name loginCustom
+POST {{TaskManagement.Server_HostAddress}}/api/auth/login
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser",
+  "password": "TestPass123!"
+}
+
+### Get user profile (requires authentication)
+GET {{TaskManagement.Server_HostAddress}}/api/auth/profile
+Authorization: Bearer {{AuthToken}}
+Accept: {{ContentType}}
+
+###############################################################################
+# TASK MANAGEMENT ENDPOINTS
+###############################################################################
+
+### Get all tasks for authenticated user
+GET {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Accept: {{ContentType}}
+
+### Get specific task by ID
+GET {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Accept: {{ContentType}}
+
+### Create a new task - Pending
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Complete API Documentation",
+  "description": "Write comprehensive documentation for all API endpoints with examples",
+  "status": 0,
+  "dueDate": "2025-01-15T10:00:00Z"
+}
+
+### Create a new task - In Progress
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Implement User Authentication",
+  "description": "Add JWT-based authentication system with login and registration",
+  "status": 1,
+  "dueDate": "2025-01-20T18:00:00Z"
+}
+
+### Create a new task - High Priority
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Fix Critical Bug in Payment System",
+  "description": "Urgent: Payment processing is failing for certain credit card types",
+  "status": 1,
+  "dueDate": "2025-01-08T09:00:00Z"
+}
+
+### Create a new task - Future Date
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Plan Q2 Sprint Goals",
+  "description": "Define objectives and key results for the second quarter",
+  "status": 0,
+  "dueDate": "2025-03-01T12:00:00Z"
+}
+
+### Update task completely (PUT)
+PUT {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Complete API Documentation - UPDATED",
+  "description": "Write comprehensive documentation for all API endpoints with examples and testing scenarios",
+  "status": 1,
+  "dueDate": "2025-01-16T15:00:00Z"
+}
+
+### Partially update task (PATCH) - Change status only
+PATCH {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "status": 2
+}
+
+### Partially update task (PATCH) - Update title and description
+PATCH {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Updated Task Title",
+  "description": "Updated description with new requirements"
+}
+
+### Partially update task (PATCH) - Extend due date
+PATCH {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "dueDate": "2025-01-25T17:00:00Z"
+}
+
+### Delete a task
+DELETE {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+
+###############################################################################
+# VALIDATION TEST CASES
+###############################################################################
+
+### Test validation - Empty title (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "",
+  "description": "This should fail validation",
+  "status": 0,
+  "dueDate": "2025-01-15T10:00:00Z"
+}
+
+### Test validation - Title too long (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "This is a very long title that exceeds the maximum allowed length of 200 characters and should trigger a validation error because it's way too long for the database field and violates business rules",
+  "description": "Testing title length validation",
+  "status": 0,
+  "dueDate": "2025-01-15T10:00:00Z"
+}
+
+### Test validation - Invalid status (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Test Invalid Status",
+  "description": "This should fail validation",
+  "status": 999,
+  "dueDate": "2025-01-15T10:00:00Z"
+}
+
+### Test validation - Past due date (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Task with past due date",
+  "description": "This should fail validation",
+  "status": 0,
+  "dueDate": "2024-01-01T10:00:00Z"
+}
+
+### Test validation - Description too long (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Test Long Description",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. This text exceeds 1000 characters and should fail validation.",
+  "status": 0,
+  "dueDate": "2025-01-15T10:00:00Z"
+}
+
+###############################################################################
+# USER REGISTRATION VALIDATION TESTS
+###############################################################################
+
+### Test registration - Invalid email (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser2",
+  "email": "invalid-email",
+  "password": "TestPass123!"
+}
+
+### Test registration - Username too short (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "ab",
+  "email": "test2@example.com",
+  "password": "TestPass123!"
+}
+
+### Test registration - Weak password (should fail)
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "testuser3",
+  "email": "test3@example.com",
+  "password": "weak"
+}
+
+### Test registration - Duplicate username (should fail after first success)
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "demo_user",
+  "email": "different@example.com",
+  "password": "TestPass123!"
+}
+
+### Test registration - Duplicate email (should fail after first success)
+POST {{TaskManagement.Server_HostAddress}}/api/auth/register
+Content-Type: {{ContentType}}
+
+{
+  "username": "differentuser",
+  "email": "demo@example.com",
+  "password": "TestPass123!"
+}
+
+###############################################################################
+# ERROR HANDLING TESTS
+###############################################################################
+
+### Test unauthorized access (no token)
+GET {{TaskManagement.Server_HostAddress}}/api/tasks
+Accept: {{ContentType}}
+
+### Test invalid token
+GET {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer invalid_token_here
+Accept: {{ContentType}}
+
+### Test accessing non-existent task
+GET {{TaskManagement.Server_HostAddress}}/api/tasks/999999
+Authorization: Bearer {{AuthToken}}
+Accept: {{ContentType}}
+
+### Test deleting non-existent task
+DELETE {{TaskManagement.Server_HostAddress}}/api/tasks/999999
+Authorization: Bearer {{AuthToken}}
+
+### Test updating non-existent task
+PUT {{TaskManagement.Server_HostAddress}}/api/tasks/999999
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "This task doesn't exist",
+  "description": "Should return 404",
+  "status": 0,
+  "dueDate": "2025-01-15T10:00:00Z"
+}
+
+###############################################################################
+# WORKFLOW SCENARIOS
+###############################################################################
+
+### Scenario 1: Complete task lifecycle
+# 1. Create task
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Workflow Test Task",
+  "description": "Testing complete task lifecycle",
+  "status": 0,
+  "dueDate": "2025-01-30T12:00:00Z"
+}
+
+### 2. Get all tasks to find the created task ID
+GET {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Accept: {{ContentType}}
+
+### 3. Update task to In Progress (use actual task ID)
+PATCH {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "status": 1
+}
+
+### 4. Complete the task
+PATCH {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "status": 2
+}
+
+### 5. Delete the completed task
+DELETE {{TaskManagement.Server_HostAddress}}/api/tasks/{{TaskId}}
+Authorization: Bearer {{AuthToken}}
+
+###############################################################################
+# PERFORMANCE AND LOAD TESTING
+###############################################################################
+
+### Create multiple tasks for testing
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Performance Test Task 1",
+  "description": "Testing API performance with multiple tasks",
+  "status": 0,
+  "dueDate": "2025-02-01T12:00:00Z"
+}
+
+###
+
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Performance Test Task 2",
+  "description": "Testing API performance with multiple tasks",
+  "status": 1,
+  "dueDate": "2025-02-02T12:00:00Z"
+}
+
+###
+
+POST {{TaskManagement.Server_HostAddress}}/api/tasks
+Authorization: Bearer {{AuthToken}}
+Content-Type: {{ContentType}}
+
+{
+  "title": "Performance Test Task 3",
+  "description": "Testing API performance with multiple tasks",
+  "status": 2,
+  "dueDate": "2025-02-03T12:00:00Z"
+}
+
+###############################################################################
+# INSTRUCTIONS
+###############################################################################
+
+# How to use this file:
+# 1. Install REST Client extension in VS Code
+# 2. Update @TaskManagement.Server_HostAddress with your API URL
+# 3. Run a login request first to get JWT token
+# 4. Copy the token from login response to @AuthToken variable
+# 5. Update @TaskId with actual task IDs from your responses
+# 6. Click "Send Request" above any ### line to execute
+
+# Expected Status Codes:
+# - 200 OK: Successful GET, PUT, PATCH
+# - 201 Created: Successful POST
+# - 204 No Content: Successful DELETE
+# - 400 Bad Request: Validation errors
+# - 401 Unauthorized: Missing/invalid token
+# - 404 Not Found: Resource doesn't exist
+# - 500 Internal Server Error: Server issues
+
+# Demo Credentials Available:
+# Username: demo_user, Password: Demo123!
+# Username: john_doe, Password: John123!
