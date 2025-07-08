@@ -10,7 +10,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { TaskProvider } from "./contexts/TaskContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import "./styles/globals.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App: React.FC = () => {

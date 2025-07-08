@@ -179,7 +179,7 @@ src/
    ```
 
 5. **Access the application**
-   - Frontend URL: `http://localhost:3000`
+   - Frontend URL: `https://localhost:54768`
 
 ### Demo Credentials
 
